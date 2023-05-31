@@ -37,8 +37,6 @@ type ConsultantData = {
   bonusRatio: number;
   bonus: number;
   totalNetwork: number;
-  totalActive: number;
-  totalQualified: number;
   totalSplitouts: number;
   isActive: boolean;
   isQualified: boolean;
@@ -163,8 +161,6 @@ export class Consultant {
     let rankPoints = perosnalPoints;
     let splitoutPoints = 0;
     let totalNetwork = this._subConsultants.length;
-    let totalActive = 0;
-    let totalQualified = 0;
     let totalSplitouts = 0;
     const isActive = perosnalPoints >= Consultant._activationThreshold;
     const subConsultantsData: ConsultantData[] = [];
@@ -176,18 +172,11 @@ export class Consultant {
         splitoutPoints += subConsultantData.rankPoints;
       }
       totalNetwork += subConsultantData.totalNetwork;
-      if (subConsultantData.isActive) {
-        totalActive++;
-      }
-      totalActive += subConsultantData.totalActive;
-      if (subConsultantData.isQualified) {
-        totalQualified++;
-      }
-      totalQualified += subConsultantData.totalQualified;
       if (subConsultantData.isSplitout) {
         totalSplitouts++;
       }
       totalSplitouts += subConsultantData.totalSplitouts;
+
       subConsultantsData.push(subConsultantData);
     }
 
@@ -203,7 +192,7 @@ export class Consultant {
       }
     }
 
-    return {
+    const consultantData = {
       code: this._code,
       perosnalPoints,
       personalGroupPoints,
@@ -214,13 +203,51 @@ export class Consultant {
       bonusRatio: rank.bonusRatio,
       bonus,
       totalNetwork,
-      totalActive,
-      totalQualified,
       totalSplitouts,
       isActive,
       isQualified: totalPoints >= Consultant._qualificationThreshold,
       isSplitout: rankPoints >= Consultant._splitoutThreshold,
       subConsultants: subConsultantsData,
     };
+
+    let directorPoints = Consultant._getDirectorPoints(consultantData);
+    if (directorPoints !== 0) {
+      let lostDirectorPoints = 0;
+      if (consultantData.totalPoints < 10000) {
+        lostDirectorPoints = 10000 - consultantData.totalPoints;
+      }
+      if (directorPoints < 10000) {
+        directorPoints = 10000;
+      }
+      directorPoints -= lostDirectorPoints;
+      if (
+        consultantData.perosnalPoints >= 200 &&
+        consultantData.totalPoints >= 4000
+      ) {
+        consultantData.bonus += directorPoints * .04;
+      }
+    }
+
+    return consultantData;
+  }
+
+  private static _getDirectorPoints(consultantData: ConsultantData): number {
+    if (!consultantData.isSplitout) {
+      return 0;
+    }
+
+
+    let result = 0;
+    for (const subConsultantData of consultantData.subConsultants) {
+      if (!subConsultantData.isSplitout) {
+        continue;
+      }
+      result += subConsultantData.totalPoints;
+      if (subConsultantData.totalPoints >= 4000) {
+        continue;
+      }
+      result += Consultant._getDirectorPoints(subConsultantData);
+    }
+    return result;
   }
 }

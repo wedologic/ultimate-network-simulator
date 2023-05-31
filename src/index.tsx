@@ -4,47 +4,47 @@ const consultants: ConsultantRecord[] = [
   {
     code: '1',
     sponsorCode: null,
-    salesPoints: 500,
+    salesPoints: 2500,
   },
   {
     code: '2',
     sponsorCode: '1',
-    salesPoints: 600,
+    salesPoints: 5000,
   },
   {
     code: '3',
     sponsorCode: '1',
-    salesPoints: 0,
+    salesPoints: 4000,
   },
   {
     code: '4',
     sponsorCode: '1',
-    salesPoints: 800,
+    salesPoints: 1500,
   },
   {
     code: '5',
     sponsorCode: '2',
-    salesPoints: 0,
+    salesPoints: 3000,
   },
   {
     code: '6',
     sponsorCode: '2',
-    salesPoints: 0,
+    salesPoints: 2000,
   },
   {
     code: '7',
     sponsorCode: '4',
-    salesPoints: 0,
+    salesPoints: 500,
   },
   {
     code: '8',
     sponsorCode: '7',
-    salesPoints: 1200,
+    salesPoints: 5000,
   },
   {
     code: '9',
     sponsorCode: '7',
-    salesPoints: 700,
+    salesPoints: 4500,
   },
 ];
 
